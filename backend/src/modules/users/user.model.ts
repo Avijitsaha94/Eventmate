@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema } from 'mongoose'
-import bcrypt from 'bcryptjs'
+import * as bcrypt from 'bcryptjs'
 
 export interface IUser extends Document {
   name: string
@@ -67,10 +67,11 @@ const userSchema = new Schema<IUser>(
 )
 
 // Password save করার আগে hash করো
-userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next()
-  this.password = await bcrypt.hash(this.password, 12)
-  next()
+userSchema.pre('save', async function () {
+  if (!this.isModified('password')) return 
+  const salt = await bcrypt.genSalt(12)
+  this.password = await bcrypt.hash(this.password as string, salt)
+  
 })
 
 // Password compare করার method
