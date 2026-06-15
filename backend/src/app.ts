@@ -15,6 +15,7 @@ import authRoutes from './modules/auth/auth.routes'
 import eventRoutes from './modules/events/event.routes'
 import bookingRoutes from './modules/bookings/booking.routes'
 import paymentRoutes from './modules/payments/payment.routes'
+import reviewRoutes from './modules/reviews/review.routes'
 
 dotenv.config()
 
@@ -32,6 +33,7 @@ app.use('/api/auth', authRoutes)
 app.use('/api/events', eventRoutes)
 app.use('/api/bookings', bookingRoutes)
 app.use('/api/payments', paymentRoutes)
+app.use('/api/reviews', reviewRoutes)
 
 app.use(errorHandler)
 
