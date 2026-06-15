@@ -1,5 +1,8 @@
 import Booking from './booking.model'
 import Event from '../events/event.model'
+import { sendBookingConfirmationEmail } from '../../config/email'
+import User from '../users/user.model'
+import { format } from 'date-fns'
 
 // Event join করো
 export const joinEventService = async (
@@ -25,6 +28,24 @@ export const joinEventService = async (
     throw new Error('Host cannot join their own event')
   }
 
+
+// joinEventService function এর শেষে booking return করার আগে:
+try {
+  const userDoc = await User.findById(userId)
+  if (userDoc) {
+    await sendBookingConfirmationEmail(
+      userDoc.email,
+      userDoc.name,
+      event.title,
+      format(new Date(event.date), 'MMMM dd, yyyy — h:mm a'),
+      event.location,
+      false
+    )
+  }
+} catch (emailError) {
+  // Email fail হলেও booking যাবে
+  console.error('Email error:', emailError)
+}
   // Already joined কিনা check করো
   const existingBooking = await Booking.findOne({ userId, eventId })
   if (existingBooking) {

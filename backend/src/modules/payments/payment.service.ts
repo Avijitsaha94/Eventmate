@@ -136,7 +136,24 @@ export const paymentSuccessService = async (data: any) => {
     { userId: payment.userId, eventId: payment.eventId },
     { paymentStatus: 'paid' }
   )
-
+// paymentSuccessService এ payment update এর পরে:
+try {
+  const userDoc = await User.findById(payment.userId)
+  const eventDoc = await Event.findById(payment.eventId)
+  if (userDoc && eventDoc) {
+    await sendBookingConfirmationEmail(
+      userDoc.email,
+      userDoc.name,
+      eventDoc.title,
+      format(new Date(eventDoc.date), 'MMMM dd, yyyy — h:mm a'),
+      eventDoc.location,
+      true,
+      payment.amount
+    )
+  }
+} catch (emailError) {
+  console.error('Email error:', emailError)
+}
   // Event participant count বাড়াও
   const event = await Event.findById(payment.eventId)
   if (event) {

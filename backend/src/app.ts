@@ -15,13 +15,20 @@ import authRoutes from './modules/auth/auth.routes'
 import eventRoutes from './modules/events/event.routes'
 import bookingRoutes from './modules/bookings/booking.routes'
 import paymentRoutes from './modules/payments/payment.routes'
-import reviewRoutes from './modules/reviews/review.routes'
-import userRoutes from './modules/users/user.routes'
+import session from 'express-session'
+import passport from './config/passport'
+
 dotenv.config()
 
 const app: Application = express()
 
 app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true }))
+app.use(session({
+  secret: process.env.SESSION_SECRET as string,
+  resave: false,
+  saveUninitialized: false,
+}))
+app.use(passport.initialize())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
@@ -33,8 +40,6 @@ app.use('/api/auth', authRoutes)
 app.use('/api/events', eventRoutes)
 app.use('/api/bookings', bookingRoutes)
 app.use('/api/payments', paymentRoutes)
-app.use('/api/reviews', reviewRoutes)
-app.use('/api/users', userRoutes)
 
 app.use(errorHandler)
 
