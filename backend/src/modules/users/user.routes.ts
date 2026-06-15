@@ -12,6 +12,7 @@ import { allowTo } from '../../middleware/role.middleware'
 import { upload } from '../../config/multer'
 import { uploadToCloudinary } from '../../utils/uploadToCloudinary'
 import { updateUserProfileService } from './user.service'
+import { becomeHost } from './user.controller'
 
 const router = Router()
 
@@ -22,6 +23,7 @@ router.get('/:id', getUserById)
 router.patch('/profile', protect, updateUserProfile)
 router.patch('/:id/status', protect, allowTo('admin'), updateUserStatus)
 router.patch('/:id/role', protect, allowTo('admin'), updateUserRole)
+router.post('/become-host', protect, becomeHost)
 
 // Avatar upload
 router.post(

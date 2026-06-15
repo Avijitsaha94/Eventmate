@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import { AuthRequest } from '../../middleware/auth.middleware'
 import { getTopHostsService } from './user.service'
+import { becomeHostService } from './user.service'
 import {
   getAllUsersService,
   getUserByIdService,
@@ -49,6 +50,23 @@ export const updateUserProfile = async (req: AuthRequest, res: Response): Promis
   try {
     const user = await updateUserProfileService(req.user!._id, req.body)
     res.status(200).json({ success: true, data: user })
+  } catch (error: any) {
+    res.status(400).json({ success: false, message: error.message })
+  }
+}
+
+
+export const becomeHost = async (
+  req: AuthRequest,
+  res: Response
+): Promise<void> => {
+  try {
+    const user = await becomeHostService(req.user!._id)
+    res.status(200).json({
+      success: true,
+      message: 'Congratulations! You are now a host.',
+      data: user,
+    })
   } catch (error: any) {
     res.status(400).json({ success: false, message: error.message })
   }

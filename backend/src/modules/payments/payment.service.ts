@@ -3,6 +3,8 @@ import Payment from './payment.model'
 import Booking from '../bookings/booking.model'
 import Event from '../events/event.model'
 import User from '../users/user.model'
+import { sendBookingConfirmationEmail } from '../../config/email'
+import { format } from 'date-fns'
 
 const store_id = process.env.SSLCOMMERZ_STORE_ID as string
 const store_passwd = process.env.SSLCOMMERZ_STORE_PASSWORD as string
@@ -131,6 +133,26 @@ export const paymentSuccessService = async (data: any) => {
 
   if (!payment) return { success: false }
 
+
+  // Email notification
+try {
+  const userDoc = await User.findById(payment.userId)
+  const eventDoc = await Event.findById(payment.eventId)
+  if (userDoc && eventDoc) {
+    await sendBookingConfirmationEmail(
+      userDoc.email,
+      userDoc.name,
+      eventDoc.title,
+      format(new Date(eventDoc.date), 'MMMM dd, yyyy — h:mm a'),
+      eventDoc.location,
+      true,
+      payment.amount
+    )
+  }
+} catch (emailError) {
+  console.error('Email notification failed:', emailError)
+}
+
   // Booking update করো
   await Booking.findOneAndUpdate(
     { userId: payment.userId, eventId: payment.eventId },
@@ -154,6 +176,9 @@ try {
 } catch (emailError) {
   console.error('Email error:', emailError)
 }
+
+
+
   // Event participant count বাড়াও
   const event = await Event.findById(payment.eventId)
   if (event) {

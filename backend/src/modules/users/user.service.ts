@@ -52,6 +52,17 @@ export const updateUserProfileService = async (
   if (!user) throw new Error('User not found')
   return user
 }
+// যেকোনো user নিজে host হতে পারবে
+export const becomeHostService = async (userId: string) => {
+  const user = await User.findById(userId)
+  if (!user) throw new Error('User not found')
+  if (user.role === 'host') throw new Error('You are already a host')
+  if (user.role === 'admin') throw new Error('Admins cannot become hosts')
+
+  user.role = 'host'
+  await user.save()
+  return user
+}
 
 // Top hosts আনো (review average দিয়ে)
 export const getTopHostsService = async () => {
