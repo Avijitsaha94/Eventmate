@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import { AuthRequest } from '../../middleware/auth.middleware'
+import { getHostRevenueChartService } from './payment.service'
 import {
   createPaymentService,
   paymentSuccessService,
@@ -86,6 +87,20 @@ export const getHostRevenue = async (
   }
 }
 
+
+
+
+export const getHostRevenueChart = async (
+  req: AuthRequest,
+  res: Response
+): Promise<void> => {
+  try {
+    const data = await getHostRevenueChartService(req.user!._id)
+    res.status(200).json({ success: true, data })
+  } catch (error: any) {
+    res.status(400).json({ success: false, message: error.message })
+  }
+}
 // My payments
 export const getMyPayments = async (
   req: AuthRequest,

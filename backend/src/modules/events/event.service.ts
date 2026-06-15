@@ -4,13 +4,8 @@ import Booking from '../bookings/booking.model'
 // সব events আনো (filter সহ)
 export const getAllEventsService = async (query: any) => {
   const {
-    type,
-    location,
-    status,
-    fee,
-    search,
-    page = 1,
-    limit = 9,
+    type, location, status, fee, search,
+    page = 1, limit = 9, sort = 'newest',
   } = query
 
   const filter: any = {}
@@ -18,7 +13,7 @@ export const getAllEventsService = async (query: any) => {
   if (type) filter.type = type
   if (location) filter.location = { $regex: location, $options: 'i' }
   if (status) filter.status = status
-  else filter.status = 'open' // default শুধু open events
+  else filter.status = 'open'
 
   if (fee === 'free') filter.fee = 0
   if (fee === 'paid') filter.fee = { $gt: 0 }
@@ -30,11 +25,18 @@ export const getAllEventsService = async (query: any) => {
     ]
   }
 
+  // Sort mapping
+  let sortQuery: any = { date: 1 } // default: newest/upcoming first
+  if (sort === 'price-low') sortQuery = { fee: 1 }
+  if (sort === 'price-high') sortQuery = { fee: -1 }
+  if (sort === 'popular') sortQuery = { currentParticipants: -1 }
+  if (sort === 'newest') sortQuery = { createdAt: -1 }
+
   const skip = (Number(page) - 1) * Number(limit)
   const total = await Event.countDocuments(filter)
   const events = await Event.find(filter)
     .populate('hostId', 'name avatar location')
-    .sort({ date: 1 })
+    .sort(sortQuery)
     .skip(skip)
     .limit(Number(limit))
 
@@ -110,6 +112,22 @@ export const updateEventStatusService = async (
   return event
 }
 
+
+// Related events — same type or location, excluding current
+export const getRelatedEventsService = async (eventId: string) => {
+  const event = await Event.findById(eventId)
+  if (!event) throw new Error('Event not found')
+
+  const related = await Event.find({
+    _id: { $ne: eventId },
+    status: 'open',
+    $or: [{ type: event.type }, { location: event.location }],
+  })
+    .populate('hostId', 'name avatar')
+    .limit(4)
+
+  return related
+}
 // Host এর সব events আনো
 export const getHostEventsService = async (hostId: string) => {
   const events = await Event.find({ hostId }).sort({ createdAt: -1 })

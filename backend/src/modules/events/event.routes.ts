@@ -8,6 +8,7 @@ import {
   updateEventStatus,
   getHostEvents,
   getFeaturedEvents,
+  getRelatedEvents,
 } from './event.controller'
 import { protect, AuthRequest } from '../../middleware/auth.middleware'
 import { allowTo } from '../../middleware/role.middleware'
@@ -20,6 +21,7 @@ const router = Router()
 router.get('/', getAllEvents)
 router.get('/featured', getFeaturedEvents)
 router.get('/host/:hostId', getHostEvents)
+router.get('/:id/related', getRelatedEvents)
 router.get('/:id', getEventById)
 
 // Protected routes

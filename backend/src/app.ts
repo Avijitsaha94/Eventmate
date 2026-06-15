@@ -5,6 +5,7 @@ import session from 'express-session'
 import passport from './config/passport'
 import { errorHandler } from './middleware/error.middleware'
 import { apiLimiter, authLimiter, paymentLimiter } from './middleware/rateLimit.middleware'
+import contactRoutes from './modules/contact/contact.routes'
 
 // Models
 import './modules/users/user.model'
@@ -52,6 +53,7 @@ app.use('/api/auth/login', authLimiter)
 app.use('/api/auth/register', authLimiter)
 app.use('/api/payments/create-intent', paymentLimiter)
 
+
 // Health check
 app.get('/', (req, res) => {
   res.json({ message: '✅ EventMate API is running' })
@@ -64,6 +66,7 @@ app.use('/api/events', eventRoutes)
 app.use('/api/bookings', bookingRoutes)
 app.use('/api/payments', paymentRoutes)
 app.use('/api/reviews', reviewRoutes)
+app.use('/api/contact', contactRoutes)
 
 // Global error handler
 app.use(errorHandler)

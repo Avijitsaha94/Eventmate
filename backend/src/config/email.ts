@@ -85,3 +85,33 @@ export const sendEventReminderEmail = async (
 }
 
 export default transporter
+
+export const sendContactEmail = async (
+  name: string,
+  email: string,
+  subject: string,
+  message: string
+) => {
+  const mailOptions = {
+    from: `EventMate Contact <${process.env.EMAIL_USER}>`,
+    to: process.env.EMAIL_USER, // Admin email এ যাবে
+    replyTo: email,
+    subject: `📩 Contact Form: ${subject}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background: #2563EB; padding: 20px; border-radius: 12px 12px 0 0;">
+          <h2 style="color: white; margin: 0;">New Contact Message</h2>
+        </div>
+        <div style="background: #f9fafb; padding: 24px; border-radius: 0 0 12px 12px;">
+          <p style="color: #4B5563;"><strong>From:</strong> ${name} (${email})</p>
+          <p style="color: #4B5563;"><strong>Subject:</strong> ${subject}</p>
+          <div style="background: white; border: 1px solid #E5E7EB; border-radius: 8px; padding: 16px; margin-top: 12px;">
+            <p style="color: #111827; white-space: pre-line;">${message}</p>
+          </div>
+        </div>
+      </div>
+    `,
+  }
+
+  await transporter.sendMail(mailOptions)
+}

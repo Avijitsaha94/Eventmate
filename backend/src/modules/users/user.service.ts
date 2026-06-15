@@ -88,3 +88,51 @@ export const getTopHostsService = async () => {
   // Rating এর ভিত্তিতে sort করো
   return hostsWithRating.sort((a, b) => b.averageRating - a.averageRating).slice(0, 4)
 }
+
+// Admin chart — user role distribution + event status distribution
+export const getAdminChartDataService = async () => {
+  const Event = require('../events/event.model').default
+
+  const users = await User.find()
+  const events = await Event.find()
+
+  // Role distribution
+  const roleCount = { user: 0, host: 0, admin: 0 }
+  users.forEach((u: any) => {
+    roleCount[u.role] = (roleCount[u.role] || 0) + 1
+  })
+  const roleData = Object.entries(roleCount).map(([role, count]) => ({
+    name: role.charAt(0).toUpperCase() + role.slice(1),
+    value: count,
+  }))
+
+  // Event status distribution
+  const statusCount = { open: 0, full: 0, completed: 0, cancelled: 0 }
+  events.forEach((e: any) => {
+    statusCount[e.status] = (statusCount[e.status] || 0) + 1
+  })
+  const statusData = Object.entries(statusCount).map(([status, count]) => ({
+    name: status.charAt(0).toUpperCase() + status.slice(1),
+    value: count,
+  }))
+
+  // Events created per month (last 6 months)
+  const months: { [key: string]: number } = {}
+  const now = new Date()
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
+    const key = d.toLocaleString('en-US', { month: 'short', year: '2-digit' })
+    months[key] = 0
+  }
+  events.forEach((e: any) => {
+    const d = new Date(e.createdAt)
+    const key = d.toLocaleString('en-US', { month: 'short', year: '2-digit' })
+    if (months[key] !== undefined) months[key] += 1
+  })
+  const eventsPerMonth = Object.entries(months).map(([month, count]) => ({
+    month,
+    events: count,
+  }))
+
+  return { roleData, statusData, eventsPerMonth }
+}

@@ -1,5 +1,7 @@
 import { Request, Response } from 'express'
 import { AuthRequest } from '../../middleware/auth.middleware'
+
+import { getRelatedEventsService } from './event.service'
 import {
   getAllEventsService,
   getEventByIdService,
@@ -75,6 +77,17 @@ export const updateEventStatus = async (req: AuthRequest, res: Response): Promis
   }
 }
 
+
+
+
+export const getRelatedEvents = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const events = await getRelatedEventsService(req.params.id)
+    res.status(200).json({ success: true, data: events })
+  } catch (error: any) {
+    res.status(400).json({ success: false, message: error.message })
+  }
+}
 // Host events
 export const getHostEvents = async (req: Request, res: Response): Promise<void> => {
   try {

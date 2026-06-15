@@ -14,11 +14,13 @@ import { uploadToCloudinary } from '../../utils/uploadToCloudinary'
 import { updateUserProfileService } from './user.service'
 import { becomeHost } from './user.controller'
 
+import { getAdminChartData } from './user.controller'
 const router = Router()
 
 router.get('/', protect, allowTo('admin'), getAllUsers)
 router.get('/top-hosts', getTopHosts)
 router.get('/:id', getUserById)
+router.get('/admin/chart-data', protect, allowTo('admin'), getAdminChartData)
 
 router.patch('/profile', protect, updateUserProfile)
 router.patch('/:id/status', protect, allowTo('admin'), updateUserStatus)

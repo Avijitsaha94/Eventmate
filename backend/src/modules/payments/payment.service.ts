@@ -133,51 +133,30 @@ export const paymentSuccessService = async (data: any) => {
 
   if (!payment) return { success: false }
 
-
   // Email notification
-try {
-  const userDoc = await User.findById(payment.userId)
-  const eventDoc = await Event.findById(payment.eventId)
-  if (userDoc && eventDoc) {
-    await sendBookingConfirmationEmail(
-      userDoc.email,
-      userDoc.name,
-      eventDoc.title,
-      format(new Date(eventDoc.date), 'MMMM dd, yyyy — h:mm a'),
-      eventDoc.location,
-      true,
-      payment.amount
-    )
+  try {
+    const userDoc = await User.findById(payment.userId)
+    const eventDoc = await Event.findById(payment.eventId)
+    if (userDoc && eventDoc) {
+      await sendBookingConfirmationEmail(
+        userDoc.email,
+        userDoc.name,
+        eventDoc.title,
+        format(new Date(eventDoc.date), 'MMMM dd, yyyy — h:mm a'),
+        eventDoc.location,
+        true,
+        payment.amount
+      )
+    }
+  } catch (emailError) {
+    console.error('Email notification failed:', emailError)
   }
-} catch (emailError) {
-  console.error('Email notification failed:', emailError)
-}
 
   // Booking update করো
   await Booking.findOneAndUpdate(
     { userId: payment.userId, eventId: payment.eventId },
     { paymentStatus: 'paid' }
   )
-// paymentSuccessService এ payment update এর পরে:
-try {
-  const userDoc = await User.findById(payment.userId)
-  const eventDoc = await Event.findById(payment.eventId)
-  if (userDoc && eventDoc) {
-    await sendBookingConfirmationEmail(
-      userDoc.email,
-      userDoc.name,
-      eventDoc.title,
-      format(new Date(eventDoc.date), 'MMMM dd, yyyy — h:mm a'),
-      eventDoc.location,
-      true,
-      payment.amount
-    )
-  }
-} catch (emailError) {
-  console.error('Email error:', emailError)
-}
-
-
 
   // Event participant count বাড়াও
   const event = await Event.findById(payment.eventId)
@@ -270,6 +249,54 @@ export const getHostRevenueService = async (hostId: string) => {
   })
 
   return { totalRevenue, payments, revenueByEvent }
+}
+
+// Host revenue chart data — last 6 months
+export const getHostRevenueChartService = async (hostId: string) => {
+  const events = await Event.find({ hostId })
+  const eventIds = events.map((e) => e._id)
+
+  const payments = await Payment.find({
+    eventId: { $in: eventIds },
+    status: 'success',
+  })
+
+  // Last 6 months grouping
+  const months: { [key: string]: number } = {}
+  const now = new Date()
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
+    const key = d.toLocaleString('en-US', { month: 'short', year: '2-digit' })
+    months[key] = 0
+  }
+
+  payments.forEach((p) => {
+    const d = new Date(p.paidAt || p.createdAt)
+    const key = d.toLocaleString('en-US', { month: 'short', year: '2-digit' })
+    if (months[key] !== undefined) months[key] += p.amount
+  })
+
+  const revenueData = Object.entries(months).map(([month, revenue]) => ({
+    month,
+    revenue,
+  }))
+
+  // Events by status
+  const statusCount: { [key: string]: number } = {
+    open: 0,
+    full: 0,
+    completed: 0,
+    cancelled: 0,
+  }
+  events.forEach((e) => {
+    statusCount[e.status] = (statusCount[e.status] || 0) + 1
+  })
+  const eventsByStatus = Object.entries(statusCount).map(([status, count]) => ({
+    status,
+    count,
+  }))
+
+  return { revenueData, eventsByStatus }
 }
 
 // User এর payment history

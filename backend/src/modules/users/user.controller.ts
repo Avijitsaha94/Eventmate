@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import { AuthRequest } from '../../middleware/auth.middleware'
 import { getTopHostsService } from './user.service'
+import { getAdminChartDataService } from './user.service'
 import { becomeHostService } from './user.service'
 import {
   getAllUsersService,
@@ -76,6 +77,20 @@ export const getTopHosts = async (req: Request, res: Response): Promise<void> =>
   try {
     const hosts = await getTopHostsService()
     res.status(200).json({ success: true, data: hosts })
+  } catch (error: any) {
+    res.status(400).json({ success: false, message: error.message })
+  }
+}
+
+
+
+export const getAdminChartData = async (
+  req: AuthRequest,
+  res: Response
+): Promise<void> => {
+  try {
+    const data = await getAdminChartDataService()
+    res.status(200).json({ success: true, data })
   } catch (error: any) {
     res.status(400).json({ success: false, message: error.message })
   }
