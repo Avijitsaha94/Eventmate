@@ -52,3 +52,28 @@ export const updateUserProfileService = async (
   if (!user) throw new Error('User not found')
   return user
 }
+
+// Top hosts আনো (review average দিয়ে)
+export const getTopHostsService = async () => {
+  // Host role এর users আনো
+  const hosts = await User.find({ role: 'host', isActive: true })
+    .select('name avatar location')
+    .limit(8)
+
+  // প্রতিটা host এর average rating calculate করো
+  const Review = require('../reviews/review.model').default
+  const hostsWithRating = await Promise.all(
+    hosts.map(async (host) => {
+      const reviews = await Review.find({ hostId: host._id })
+      const avg =
+        reviews.length > 0
+          ? reviews.reduce((s: number, r: any) => s + r.rating, 0) /
+            reviews.length
+          : 0
+      return { ...host.toObject(), averageRating: avg, totalReviews: reviews.length }
+    })
+  )
+
+  // Rating এর ভিত্তিতে sort করো
+  return hostsWithRating.sort((a, b) => b.averageRating - a.averageRating).slice(0, 4)
+}
