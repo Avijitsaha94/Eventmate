@@ -4,6 +4,7 @@ import Booking from '../bookings/booking.model'
 import Event from '../events/event.model'
 import User from '../users/user.model'
 import { sendBookingConfirmationEmail } from '../../config/email'
+import logger from '../../utils/logger'
 import { format } from 'date-fns'
 
 const store_id = process.env.SSLCOMMERZ_STORE_ID as string
@@ -149,7 +150,7 @@ export const paymentSuccessService = async (data: any) => {
       )
     }
   } catch (emailError) {
-    console.error('Email notification failed:', emailError)
+     logger.error('Email notification failed:', emailError)
   }
 
   // Booking update করো

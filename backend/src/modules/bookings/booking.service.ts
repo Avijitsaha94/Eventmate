@@ -3,9 +3,7 @@ import Event from '../events/event.model'
 import { sendBookingConfirmationEmail } from '../../config/email'
 import User from '../users/user.model'
 import { format } from 'date-fns'
-import { sendBookingConfirmationEmail } from '../../config/email'
-import User from '../users/user.model'
-import { format } from 'date-fns'
+import logger from '../../utils/logger'
 
 // Event join করো
 export const joinEventService = async (
@@ -47,7 +45,7 @@ try {
   }
 } catch (emailError) {
   // Email fail হলেও booking যাবে
-  console.error('Email error:', emailError)
+   logger.error('Email notification failed:', emailError)
 }
 
 
