@@ -183,6 +183,7 @@ export default function UserDashboard() {
                     <div className="px-4 pb-4">
                       <ReviewForm
                         eventId={booking.eventId._id}
+                         hostId={booking.eventId.hostId}
                         onSuccess={() => setReviewingEventId(null)}
                       />
                     </div>
