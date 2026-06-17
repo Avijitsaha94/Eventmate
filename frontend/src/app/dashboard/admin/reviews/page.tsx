@@ -85,7 +85,7 @@ export default function AdminReviewsPage() {
                   <span className="text-sm text-gray-600">
                     {review.hostId?.name || 'Host'}
                   </span>
-                  <StarRating value={review.rating} readonly size={13} />
+                  <StarRating rating={review.rating} readonly size={13} />
                 </div>
                 <p className="text-sm text-gray-600 line-clamp-2 mb-1">
                   {review.comment}
