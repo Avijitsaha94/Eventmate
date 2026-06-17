@@ -1,7 +1,7 @@
-import { Response, NextFunction } from 'express'
+import { Response, NextFunction, RequestHandler } from 'express'
 import { AuthRequest } from './auth.middleware'
 
-export const allowTo = (...roles: string[]) => {
+const allowToHandler = (...roles: string[]) => {
   return (req: AuthRequest, res: Response, next: NextFunction): void => {
     if (!req.user) {
       res.status(401).json({ success: false, message: 'Not authenticated' })
@@ -17,3 +17,6 @@ export const allowTo = (...roles: string[]) => {
     next()
   }
 }
+
+export const allowTo = (...roles: string[]): RequestHandler =>
+  allowToHandler(...roles) as RequestHandler

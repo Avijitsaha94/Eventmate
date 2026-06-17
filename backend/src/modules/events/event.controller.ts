@@ -26,7 +26,7 @@ export const getAllEvents = async (req: Request, res: Response): Promise<void> =
 // Single event
 export const getEventById = async (req: Request, res: Response): Promise<void> => {
   try {
-    const event = await getEventByIdService(req.params.id)
+    const event = await getEventByIdService(req.params.id as string)
     res.status(200).json({ success: true, data: event })
   } catch (error: any) {
     res.status(404).json({ success: false, message: error.message })
@@ -46,7 +46,7 @@ export const createEvent = async (req: AuthRequest, res: Response): Promise<void
 // Event update
 export const updateEvent = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const event = await updateEventService(req.params.id, req.user!._id, req.body)
+    const event = await updateEventService(req.params.id as string, req.user!._id, req.body)
     res.status(200).json({ success: true, message: 'Event updated', data: event })
   } catch (error: any) {
     res.status(400).json({ success: false, message: error.message })
@@ -56,7 +56,7 @@ export const updateEvent = async (req: AuthRequest, res: Response): Promise<void
 // Event delete
 export const deleteEvent = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    await deleteEventService(req.params.id, req.user!._id, req.user!.role)
+    await deleteEventService(req.params.id as string, req.user!._id, req.user!.role)
     res.status(200).json({ success: true, message: 'Event deleted' })
   } catch (error: any) {
     res.status(400).json({ success: false, message: error.message })
@@ -67,7 +67,7 @@ export const deleteEvent = async (req: AuthRequest, res: Response): Promise<void
 export const updateEventStatus = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const event = await updateEventStatusService(
-      req.params.id,
+      req.params.id as string,
       req.user!._id,
       req.body.status
     )
@@ -82,7 +82,7 @@ export const updateEventStatus = async (req: AuthRequest, res: Response): Promis
 
 export const getRelatedEvents = async (req: Request, res: Response): Promise<void> => {
   try {
-    const events = await getRelatedEventsService(req.params.id)
+    const events = await getRelatedEventsService(req.params.id as string)
     res.status(200).json({ success: true, data: events })
   } catch (error: any) {
     res.status(400).json({ success: false, message: error.message })
@@ -91,7 +91,7 @@ export const getRelatedEvents = async (req: Request, res: Response): Promise<voi
 // Host events
 export const getHostEvents = async (req: Request, res: Response): Promise<void> => {
   try {
-    const events = await getHostEventsService(req.params.hostId)
+    const events = await getHostEventsService(req.params.hostId as string)
     res.status(200).json({ success: true, data: events })
   } catch (error: any) {
     res.status(400).json({ success: false, message: error.message })

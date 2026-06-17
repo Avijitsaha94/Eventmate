@@ -53,7 +53,7 @@ export const getHostReviews = async (
   res: Response
 ): Promise<void> => {
   try {
-    const result = await getHostReviewsService(req.params.hostId)
+    const result = await getHostReviewsService(req.params.hostId as string)
     res.status(200).json({ success: true, data: result })
   } catch (error: any) {
     res.status(400).json({ success: false, message: error.message })
@@ -66,7 +66,7 @@ export const deleteReview = async (
   res: Response
 ): Promise<void> => {
   try {
-    await deleteReviewService(req.params.id)
+    await deleteReviewService(req.params.id as string)
     res.status(200).json({ success: true, message: 'Review deleted' })
   } catch (error: any) {
     res.status(400).json({ success: false, message: error.message })
@@ -81,7 +81,7 @@ export const checkUserReview = async (
   try {
     const result = await checkUserReviewService(
       req.user!._id,
-      req.params.eventId
+      req.params.eventId as string
     )
     res.status(200).json({ success: true, data: result })
   } catch (error: any) {

@@ -1,4 +1,4 @@
-import SSLCommerzPayment from 'sslcommerz-lts'
+const SSLCommerzPayment = require('sslcommerz-lts')
 import Payment from './payment.model'
 import Booking from '../bookings/booking.model'
 import Event from '../events/event.model'

@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express'
+import { Router, Response, RequestHandler } from 'express'
 import {
   getAllUsers,
   getUserById,
@@ -6,33 +6,33 @@ import {
   updateUserRole,
   updateUserProfile,
   getTopHosts,
+  becomeHost,
+  getAdminChartData,
 } from './user.controller'
 import { protect, AuthRequest } from '../../middleware/auth.middleware'
 import { allowTo } from '../../middleware/role.middleware'
 import { upload } from '../../config/multer'
 import { uploadToCloudinary } from '../../utils/uploadToCloudinary'
 import { updateUserProfileService } from './user.service'
-import { becomeHost } from './user.controller'
 
-import { getAdminChartData } from './user.controller'
 const router = Router()
 
-router.get('/', protect, allowTo('admin'), getAllUsers)
+router.get('/', protect, allowTo('admin'), getAllUsers as RequestHandler)
 router.get('/top-hosts', getTopHosts)
+router.get('/admin/chart-data', protect, allowTo('admin'), getAdminChartData as RequestHandler)
 router.get('/:id', getUserById)
-router.get('/admin/chart-data', protect, allowTo('admin'), getAdminChartData)
 
-router.patch('/profile', protect, updateUserProfile)
-router.patch('/:id/status', protect, allowTo('admin'), updateUserStatus)
-router.patch('/:id/role', protect, allowTo('admin'), updateUserRole)
-router.post('/become-host', protect, becomeHost)
+router.patch('/profile', protect, updateUserProfile as RequestHandler)
+router.patch('/:id/status', protect, allowTo('admin'), updateUserStatus as RequestHandler)
+router.patch('/:id/role', protect, allowTo('admin'), updateUserRole as RequestHandler)
+router.post('/become-host', protect, becomeHost as RequestHandler)
 
 // Avatar upload
 router.post(
   '/upload-avatar',
   protect,
   upload.single('avatar'),
-  async (req: AuthRequest, res: Response): Promise<void> => {
+  (async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       if (!req.file) {
         res.status(400).json({ success: false, message: 'No file uploaded' })
@@ -56,7 +56,7 @@ router.post(
     } catch (error: any) {
       res.status(400).json({ success: false, message: error.message })
     }
-  }
+  }) as RequestHandler
 )
 
 export default router

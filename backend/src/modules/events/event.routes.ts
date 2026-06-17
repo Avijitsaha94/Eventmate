@@ -1,4 +1,4 @@
-import { Router, Response } from 'express'
+import { Router, Response, RequestHandler } from 'express'
 import {
   getAllEvents,
   getEventById,
@@ -25,10 +25,10 @@ router.get('/:id/related', getRelatedEvents)
 router.get('/:id', getEventById)
 
 // Protected routes
-router.post('/', protect, allowTo('host', 'admin'), createEvent)
-router.patch('/:id', protect, allowTo('host', 'admin'), updateEvent)
-router.delete('/:id', protect, allowTo('host', 'admin'), deleteEvent)
-router.patch('/:id/status', protect, allowTo('host', 'admin'), updateEventStatus)
+router.post('/', protect, allowTo('host', 'admin'), createEvent as RequestHandler)
+router.patch('/:id', protect, allowTo('host', 'admin'), updateEvent as RequestHandler)
+router.delete('/:id', protect, allowTo('host', 'admin'), deleteEvent as RequestHandler)
+router.patch('/:id/status', protect, allowTo('host', 'admin'), updateEventStatus as RequestHandler)
 
 // Event image upload
 router.post(
@@ -36,7 +36,7 @@ router.post(
   protect,
   allowTo('host', 'admin'),
   upload.single('image'),
-  async (req: AuthRequest, res: Response): Promise<void> => {
+  (async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       if (!req.file) {
         res.status(400).json({ success: false, message: 'No file uploaded' })
@@ -53,7 +53,7 @@ router.post(
     } catch (error: any) {
       res.status(400).json({ success: false, message: error.message })
     }
-  }
+  }) as RequestHandler
 )
 
 export default router

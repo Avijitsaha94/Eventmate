@@ -22,7 +22,7 @@ export const getAllUsers = async (req: AuthRequest, res: Response): Promise<void
 
 export const getUserById = async (req: Request, res: Response): Promise<void> => {
   try {
-    const user = await getUserByIdService(req.params.id)
+    const user = await getUserByIdService(req.params.id as string)
     res.status(200).json({ success: true, data: user })
   } catch (error: any) {
     res.status(404).json({ success: false, message: error.message })
@@ -31,7 +31,7 @@ export const getUserById = async (req: Request, res: Response): Promise<void> =>
 
 export const updateUserStatus = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const user = await updateUserStatusService(req.params.id, req.body.isActive)
+    const user = await updateUserStatusService(req.params.id as string, req.body.isActive)
     res.status(200).json({ success: true, data: user })
   } catch (error: any) {
     res.status(400).json({ success: false, message: error.message })
@@ -40,7 +40,7 @@ export const updateUserStatus = async (req: AuthRequest, res: Response): Promise
 
 export const updateUserRole = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const user = await updateUserRoleService(req.params.id, req.body.role)
+    const user = await updateUserRoleService(req.params.id as string, req.body.role)
     res.status(200).json({ success: true, data: user })
   } catch (error: any) {
     res.status(400).json({ success: false, message: error.message })

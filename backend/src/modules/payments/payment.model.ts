@@ -8,6 +8,8 @@ export interface IPayment extends Document {
   transactionId: string
   status: 'success' | 'failed' | 'cancelled' | 'pending'
   paidAt: Date
+    createdAt: Date
+  updatedAt: Date
 }
 
 const paymentSchema = new Schema<IPayment>(

@@ -4,7 +4,7 @@ import dotenv from 'dotenv'
 import session from 'express-session'
 import passport from './config/passport'
 import { errorHandler } from './middleware/error.middleware'
-import { apiLimiter, authLimiter, paymentLimiter } from './middleware/rateLimit.middleware'
+import { apiLimiter, authLimiter, paymentLimiter } from './modules/rateLimit.middleware'
 import contactRoutes from './modules/contact/contact.routes'
 
 // Models

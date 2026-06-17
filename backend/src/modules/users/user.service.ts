@@ -52,6 +52,7 @@ export const updateUserProfileService = async (
   if (!user) throw new Error('User not found')
   return user
 }
+
 // যেকোনো user নিজে host হতে পারবে
 export const becomeHostService = async (userId: string) => {
   const user = await User.findById(userId)
@@ -66,12 +67,10 @@ export const becomeHostService = async (userId: string) => {
 
 // Top hosts আনো (review average দিয়ে)
 export const getTopHostsService = async () => {
-  // Host role এর users আনো
   const hosts = await User.find({ role: 'host', isActive: true })
     .select('name avatar location')
     .limit(8)
 
-  // প্রতিটা host এর average rating calculate করো
   const Review = require('../reviews/review.model').default
   const hostsWithRating = await Promise.all(
     hosts.map(async (host) => {
@@ -85,7 +84,6 @@ export const getTopHostsService = async () => {
     })
   )
 
-  // Rating এর ভিত্তিতে sort করো
   return hostsWithRating.sort((a, b) => b.averageRating - a.averageRating).slice(0, 4)
 }
 
@@ -97,7 +95,7 @@ export const getAdminChartDataService = async () => {
   const events = await Event.find()
 
   // Role distribution
-  const roleCount = { user: 0, host: 0, admin: 0 }
+  const roleCount: Record<string, number> = { user: 0, host: 0, admin: 0 }
   users.forEach((u: any) => {
     roleCount[u.role] = (roleCount[u.role] || 0) + 1
   })
@@ -107,7 +105,12 @@ export const getAdminChartDataService = async () => {
   }))
 
   // Event status distribution
-  const statusCount = { open: 0, full: 0, completed: 0, cancelled: 0 }
+  const statusCount: Record<string, number> = {
+    open: 0,
+    full: 0,
+    completed: 0,
+    cancelled: 0,
+  }
   events.forEach((e: any) => {
     statusCount[e.status] = (statusCount[e.status] || 0) + 1
   })
@@ -117,7 +120,7 @@ export const getAdminChartDataService = async () => {
   }))
 
   // Events created per month (last 6 months)
-  const months: { [key: string]: number } = {}
+  const months: Record<string, number> = {}
   const now = new Date()
   for (let i = 5; i >= 0; i--) {
     const d = new Date(now.getFullYear(), now.getMonth() - i, 1)

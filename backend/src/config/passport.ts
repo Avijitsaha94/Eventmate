@@ -23,7 +23,7 @@ passport.use(
             user.avatar = profile.photos[0].value
             await user.save()
           }
-          return done(null, user)
+          return done(null, user as any)
         }
 
         // নতুন user তৈরি করো
@@ -35,9 +35,9 @@ passport.use(
           role: 'user',
         })
 
-        return done(null, user)
+        return done(null, user as any)
       } catch (error) {
-        return done(error, undefined)
+        return done(error as Error, undefined)
       }
     }
   )
