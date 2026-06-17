@@ -23,6 +23,7 @@ export default function UserSettingsPage() {
   useEffect(() => {
     const user = getUser()
     if (user) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setForm({
         name: user.name || '',
         bio: (user as any).bio || '',

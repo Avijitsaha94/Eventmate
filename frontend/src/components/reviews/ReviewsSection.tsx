@@ -8,8 +8,8 @@ import ReviewForm from './ReviewForm'
 
 interface ReviewsSectionProps {
   hostId: string
-  eventId: string
-  eventStatus: string
+  eventId?: string
+  eventStatus?: string
 }
 
 export default function ReviewsSection({ hostId, eventId, eventStatus }: ReviewsSectionProps) {
@@ -36,7 +36,7 @@ export default function ReviewsSection({ hostId, eventId, eventStatus }: Reviews
 
   useEffect(() => {
     const checkReview = async () => {
-      if (!user) return
+      if (!user || !eventId) return
       try {
         const res = await api.get(`/api/reviews/check/${eventId}`)
         setHasReviewed(res.data.data.hasReviewed)
@@ -49,7 +49,7 @@ export default function ReviewsSection({ hostId, eventId, eventStatus }: Reviews
       } catch {}
     }
     checkReview()
-  }, [eventId, eventStatus, hostId])
+  }, [eventId, eventStatus, hostId, user])
 
   if (loading) {
     return <div className="h-28 bg-gray-100 dark:bg-gray-800 rounded-2xl animate-pulse" />
@@ -79,7 +79,7 @@ export default function ReviewsSection({ hostId, eventId, eventStatus }: Reviews
         </div>
       </div>
 
-      {canReview && !hasReviewed && (
+      {canReview && !hasReviewed && eventId && (
         <ReviewForm
           eventId={eventId}
           hostId={hostId}
