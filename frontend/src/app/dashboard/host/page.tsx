@@ -118,7 +118,7 @@ export default function HostDashboard() {
           <XAxis dataKey="month" fontSize={12} stroke="#9CA3AF" />
           <YAxis fontSize={12} stroke="#9CA3AF" />
           <Tooltip
-            formatter={(value: number) => [`৳${value}`, 'Revenue']}
+            formatter={(value) => [`৳${value}`, 'Revenue']}
             contentStyle={{ borderRadius: '12px', fontSize: '12px' }}
           />
           <Line type="monotone" dataKey="revenue" stroke="#2563EB" strokeWidth={2.5} dot={{ r: 4 }} />
