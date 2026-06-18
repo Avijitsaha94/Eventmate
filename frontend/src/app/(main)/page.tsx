@@ -249,7 +249,7 @@ function FeaturedEventsSection() {
             <h2 className="text-3xl font-bold text-gray-900 mb-1">
               Upcoming Events
             </h2>
-            <p className="text-gray-500">Don't miss out on these experiences</p>
+            <p className="text-gray-500">Dont miss out on these experiences</p>
           </div>
           <Link
             href="/events"
