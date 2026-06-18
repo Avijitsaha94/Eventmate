@@ -25,7 +25,7 @@ import reviewRoutes from './modules/reviews/review.routes'
 dotenv.config()
 
 const app: Application = express()
-
+app.set('trust proxy', 1)
 // CORS
 app.use(cors({
   origin: process.env.FRONTEND_URL,
